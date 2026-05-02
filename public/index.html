@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Giveaway Generator</title>
+  <style>
+    :root {
+      --ink: #1d2433;
+      --muted: #60708c;
+      --line: rgba(26, 39, 66, 0.12);
+      --paper: #fffaf1;
+      --panel: rgba(255, 255, 255, 0.78);
+      --panel-strong: rgba(255, 255, 255, 0.92);
+      --accent: #c6462d;
+      --accent-2: #0e7c66;
+      --warning: #9a3412;
+      --shadow: 0 24px 60px rgba(29, 36, 51, 0.14);
+      --radius: 18px;
+      --radius-sm: 12px;
+      --font-display: Georgia, 'Times New Roman', serif;
+      --font-body: 'Avenir Next', 'Segoe UI', sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--font-body);
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(198, 70, 45, 0.18), transparent 30%),
+        radial-gradient(circle at top right, rgba(14, 124, 102, 0.16), transparent 26%),
+        linear-gradient(180deg, #f6efe3 0%, #efe8dc 100%);
+    }
+
+    .shell {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 32px 20px 60px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 22px;
+      margin-bottom: 22px;
+    }
+
+    .hero-card,
+    .panel {
+      background: var(--panel);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.65);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-card {
+      padding: 30px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card::after {
+      content: '';
+      position: absolute;
+      inset: auto -40px -70px auto;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(198, 70, 45, 0.18), transparent 70%);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: rgba(198, 70, 45, 0.1);
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    h1 {
+      margin: 16px 0 12px;
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+    }
+
+    .lede {
+      max-width: 48ch;
+      color: var(--muted);
+      font-size: 1.02rem;
+      line-height: 1.6;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 24px;
+    }
+
+    .stat {
+      padding: 16px;
+      border-radius: var(--radius-sm);
+      background: var(--panel-strong);
+      border: 1px solid var(--line);
+    }
+
+    .stat-label {
+      display: block;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .stat strong {
+      font-size: 1.8rem;
+      font-family: var(--font-display);
+      font-weight: 700;
+    }
+
+    .panel {
+      padding: 24px;
+    }
+
+    .panel h2 {
+      margin: 0 0 8px;
+      font-size: 1.05rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .stack {
+      display: grid;
+      gap: 18px;
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    input,
+    button,
+    a.button {
+      font: inherit;
+    }
+
+    input {
+      width: 100%;
+      padding: 13px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.92);
+      color: var(--ink);
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    button,
+    a.button {
+      border: 0;
+      border-radius: 999px;
+      padding: 13px 18px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      transition: transform 140ms ease, box-shadow 140ms ease, opacity 140ms ease;
+    }
+
+    button:hover,
+    a.button:hover {
+      transform: translateY(-1px);
+    }
+
+    .primary {
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 10px 24px rgba(198, 70, 45, 0.28);
+    }
+
+    .secondary {
+      background: rgba(14, 124, 102, 0.12);
+      color: var(--accent-2);
+    }
+
+    .ghost {
+      background: rgba(255, 255, 255, 0.75);
+      color: var(--ink);
+      border: 1px solid var(--line);
+    }
+
+    button:disabled {
+      opacity: 0.45;
+      cursor: wait;
+      transform: none;
+    }
+
+    .message {
+      min-height: 1.5em;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .message.error { color: #b42318; }
+    .message.success { color: var(--accent-2); }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th,
+    td {
+      padding: 11px 10px;
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    th {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+
+    .table-wrap {
+      overflow: auto;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.86);
+    }
+
+    .hint {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+
+    code {
+      font-family: 'SFMono-Regular', Menlo, monospace;
+      background: rgba(29, 36, 51, 0.06);
+      border-radius: 6px;
+      padding: 2px 6px;
+      color: #7a1f11;
+    }
+
+    @media (max-width: 900px) {
+      .hero,
+      .content-grid,
+      .field-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .shell {
+        padding-inline: 14px;
+      }
+
+      .hero-card,
+      .panel {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <article class="hero-card">
+        <div class="eyebrow">Shopify customer export</div>
+        <h1>Pull giveaway audiences by metafield, then export the CSV.</h1>
+        <p class="lede">
+          This app scans your Shopify customers with an offline Admin API token, keeps only customers whose chosen metafield has a value, and gives you both a quick interest breakdown and a download-ready CSV.
+        </p>
+        <div class="hero-stats">
+          <div class="stat">
+            <span class="stat-label">Shop</span>
+            <strong id="shopDisplay">-</strong>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Matched customers</span>
+            <strong id="matchedCount">0</strong>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Customers scanned</span>
+            <strong id="scannedCount">0</strong>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Distinct interest values</span>
+            <strong id="distinctCount">0</strong>
+          </div>
+        </div>
+      </article>
+
+      <aside class="panel stack">
+        <div>
+          <h2>Export setup</h2>
+          <p class="hint">Default field is <code>custom.tcg_interest</code>, but you can point the export at any customer metafield.</p>
+        </div>
+
+        <div class="field-grid">
+          <label>
+            Metafield namespace
+            <input id="namespaceInput" value="custom" autocomplete="off">
+          </label>
+          <label>
+            Metafield key
+            <input id="keyInput" value="tcg_interest" autocomplete="off">
+          </label>
+        </div>
+
+        <div class="actions">
+          <button id="previewButton" class="primary">Preview matching customers</button>
+          <a id="downloadButton" class="button secondary" href="#">Download CSV</a>
+          <a id="reauthButton" class="button ghost" href="#" hidden>Reauthorize app</a>
+        </div>
+
+        <div id="message" class="message"></div>
+      </aside>
+    </section>
+
+    <section class="content-grid">
+      <article class="panel stack">
+        <div>
+          <h2>Interest breakdown</h2>
+          <p class="hint">If customers choose multiple interests in one metafield, the summary splits on commas, semicolons, pipes, and line breaks.</p>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Interest</th>
+                <th>Customers</th>
+              </tr>
+            </thead>
+            <tbody id="summaryBody">
+              <tr><td colspan="2">No data loaded yet.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="panel stack">
+        <div>
+          <h2>Preview rows</h2>
+          <p class="hint">The table shows the first 25 matches so you can confirm the field before exporting.</p>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>First</th>
+                <th>Last</th>
+                <th>Email</th>
+                <th>Interest</th>
+              </tr>
+            </thead>
+            <tbody id="previewBody">
+              <tr><td colspan="4">No data loaded yet.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const shop = params.get('shop');
+    const shopDisplay = document.getElementById('shopDisplay');
+    const namespaceInput = document.getElementById('namespaceInput');
+    const keyInput = document.getElementById('keyInput');
+    const previewButton = document.getElementById('previewButton');
+    const downloadButton = document.getElementById('downloadButton');
+    const reauthButton = document.getElementById('reauthButton');
+    const message = document.getElementById('message');
+    const matchedCount = document.getElementById('matchedCount');
+    const scannedCount = document.getElementById('scannedCount');
+    const distinctCount = document.getElementById('distinctCount');
+    const summaryBody = document.getElementById('summaryBody');
+    const previewBody = document.getElementById('previewBody');
+
+    shopDisplay.textContent = shop || 'missing';
+    previewButton.disabled = !shop;
+    downloadButton.style.pointerEvents = shop ? 'auto' : 'none';
+    downloadButton.style.opacity = shop ? '1' : '0.4';
+
+    function setMessage(text, type = '') {
+      message.textContent = text;
+      message.className = `message ${type}`.trim();
+    }
+
+    function currentParams() {
+      const exportParams = new URLSearchParams();
+      exportParams.set('shop', shop || '');
+      exportParams.set('namespace', namespaceInput.value.trim() || 'custom');
+      exportParams.set('key', keyInput.value.trim() || 'tcg_interest');
+      return exportParams;
+    }
+
+    function refreshDownloadLink() {
+      downloadButton.href = `/api/export/customers.csv?${currentParams().toString()}`;
+    }
+
+    function renderSummary(summary) {
+      if (!summary.length) {
+        summaryBody.innerHTML = '<tr><td colspan="2">No matching customers for this metafield.</td></tr>';
+        return;
+      }
+
+      summaryBody.innerHTML = summary.map(item => `
+        <tr>
+          <td>${escapeHtml(item.interest)}</td>
+          <td>${item.count}</td>
+        </tr>
+      `).join('');
+    }
+
+    function renderPreview(rows) {
+      if (!rows.length) {
+        previewBody.innerHTML = '<tr><td colspan="4">No matching customers for this metafield.</td></tr>';
+        return;
+      }
+
+      previewBody.innerHTML = rows.slice(0, 25).map(row => `
+        <tr>
+          <td>${escapeHtml(row.first_name)}</td>
+          <td>${escapeHtml(row.last_name)}</td>
+          <td>${escapeHtml(row.email)}</td>
+          <td>${escapeHtml(row.tcg_interest)}</td>
+        </tr>
+      `).join('');
+    }
+
+    function escapeHtml(value) {
+      return String(value || '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+    }
+
+    async function loadPreview() {
+      if (!shop) {
+        setMessage('Missing shop parameter. Open the app from Shopify admin or add ?shop=your-store.myshopify.com to the URL.', 'error');
+        return;
+      }
+
+      previewButton.disabled = true;
+      refreshDownloadLink();
+      setMessage('Scanning customers through Shopify Admin API...');
+      reauthButton.hidden = true;
+
+      try {
+        const response = await fetch(`/api/report?${currentParams().toString()}`);
+        const data = await response.json();
+
+        if (!response.ok) {
+          if (data.needsReauth && data.authUrl) {
+            reauthButton.hidden = false;
+            reauthButton.href = data.authUrl;
+          }
+
+          throw new Error(data.error || 'Preview failed');
+        }
+
+        matchedCount.textContent = String(data.matchedCount);
+        scannedCount.textContent = String(data.scannedCount);
+        distinctCount.textContent = String(data.summary.length);
+        renderSummary(data.summary);
+        renderPreview(data.rows);
+        setMessage(`Loaded ${data.matchedCount} matching customers from ${data.scannedCount} scanned records.`, 'success');
+      } catch (error) {
+        matchedCount.textContent = '0';
+        scannedCount.textContent = '0';
+        distinctCount.textContent = '0';
+        renderSummary([]);
+        renderPreview([]);
+        setMessage(error.message, 'error');
+      } finally {
+        previewButton.disabled = false;
+      }
+    }
+
+    namespaceInput.addEventListener('input', refreshDownloadLink);
+    keyInput.addEventListener('input', refreshDownloadLink);
+    previewButton.addEventListener('click', loadPreview);
+    refreshDownloadLink();
+  </script>
+</body>
+</html>
